@@ -251,8 +251,8 @@ namespace ConsoleMsgServer
                 try
                 {
                     byte[] reciveDatas = new byte[1024 + 8]; // 最大长度为RSA公钥加上协议头
-                    tcpTransferSocket.Receive(reciveDatas);
-                    DealWithTcpTransferRecieveDatas(reciveDatas);
+                    int actualLength = tcpTransferSocket.Receive(reciveDatas);
+                    DealWithTcpTransferRecieveDatas(reciveDatas.Take(actualLength).ToArray());
                 }
                 catch (SocketException ex)
                 {
