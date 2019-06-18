@@ -296,7 +296,7 @@ namespace ConsoleMsgServer
             byte deviceIndex = datas[(byte)TCPProtocol.DeviceID]; // 设备号
             TCPProtocolKey protocolKey = (TCPProtocolKey)datas[(byte)TCPProtocol.ProtocolKey]; // 标志位
 
-            if (remoteDeviceIndex.Equals(null) && !protocolKey.Equals(TCPProtocolKey.RSAPublicKey)) return; // 尚未获得设备号 不允许接收RSA公钥以外的消息
+            if (Object.Equals(remoteDeviceIndex, null) && !protocolKey.Equals(TCPProtocolKey.RSAPublicKey)) return; // 尚未获得设备号 不允许接收RSA公钥以外的消息
 
             switch (protocolKey)
             {
@@ -354,7 +354,7 @@ namespace ConsoleMsgServer
             aesKey.AddRange(commonKey);
             byte[] keyDatas = EncryptByRSA(aesKey.ToArray()); // 加密数据内容
 
-            if (!keyDatas.Equals(null))
+            if (!Object.Equals(keyDatas, null))
             {
                 byte[] sendDatas = EnpackTCP(keyDatas, TCPProtocolKey.AESCommonKeyAndIV);
                 SendWork(sendDatas);
@@ -369,7 +369,7 @@ namespace ConsoleMsgServer
         static void PushNormalData(byte[] rawBytes)
         {
             byte[] datas = DecryptByAES(rawBytes); // 解密
-            if (!datas.Equals(null)) PushToQueue(datas, QueueNum.TcpToPipe);
+            if (!Object.Equals(datas, null)) PushToQueue(datas, QueueNum.TcpToPipe);
         }
         #endregion
 
@@ -387,7 +387,7 @@ namespace ConsoleMsgServer
                 if (cancelFlag.IsCancellationRequested) break;
 
                 byte[] dataContent = PopFromQueue(QueueNum.PipeToTcp);
-                if (dataContent.Equals(null))
+                if (Object.Equals(dataContent, null))
                 {
                     Thread.Sleep(waitTimerMsForBuffer);
                     continue;
@@ -407,7 +407,7 @@ namespace ConsoleMsgServer
         {
             byte[] encryptedContent = EncryptByAES(dataContent); // 加密
 
-            if (encryptedContent.Equals(null)) return; // 加密失败
+            if (Object.Equals(encryptedContent, null)) return; // 加密失败
 
             byte[] sendBytes = EnpackTCP(encryptedContent, TCPProtocolKey.NormalData); // 打包
 
@@ -513,7 +513,7 @@ namespace ConsoleMsgServer
                 if (cancelFlag.IsCancellationRequested) break;
 
                 byte[] pipeDatas = PopFromQueue(QueueNum.TcpToPipe);
-                if (pipeDatas.Equals(null))
+                if (Object.Equals(pipeDatas, null))
                 {
                     Thread.Sleep(waitTimerMsForBuffer);
                     continue;
@@ -702,12 +702,12 @@ namespace ConsoleMsgServer
         /// <returns>加密后的字节流</returns>
         static byte[] EncryptByRSA(byte[] nonEncryptedBytes)
         {
-            if (nonEncryptedBytes.Equals(null) || nonEncryptedBytes.Length < 1)
+            if (Object.Equals(nonEncryptedBytes, null) || nonEncryptedBytes.Length < 1)
             {
                 Logger.HistoryPrinting(Logger.Level.WARN, MethodBase.GetCurrentMethod().DeclaringType.FullName, "Datas for encrypting by RSA is abnormal.");
                 return null; // 待加密数据异常
             }
-            if (remoteDevicePublicKey.Equals(null))
+            if (Object.Equals(remoteDevicePublicKey, null))
             {
                 Logger.HistoryPrinting(Logger.Level.WARN, MethodBase.GetCurrentMethod().DeclaringType.FullName, "RSA public key has not been known yet.");
                 return null; // RSA公钥未知
@@ -731,13 +731,13 @@ namespace ConsoleMsgServer
         /// <returns>加密后的字节流</returns>
         static byte[] EncryptByAES(byte[] nonEncryptedBytes)
         {
-            if (nonEncryptedBytes.Equals(null) || nonEncryptedBytes.Length < 1)
+            if (Object.Equals(nonEncryptedBytes, null) || nonEncryptedBytes.Length < 1)
             {
                 Logger.HistoryPrinting(Logger.Level.WARN, MethodBase.GetCurrentMethod().DeclaringType.FullName, "Datas for encrypting by AES is abnormal.");
                 return null; // 待加密数据异常
             }
-            if (commonIV.Equals(null) ||
-                commonKey.Equals(null))
+            if (Object.Equals(commonIV, null) ||
+                Object.Equals(commonKey, null))
             {
                 Logger.HistoryPrinting(Logger.Level.WARN, MethodBase.GetCurrentMethod().DeclaringType.FullName, "AES key has not been known yet.");
                 return null; // AES密钥和初始向量未知
@@ -773,13 +773,13 @@ namespace ConsoleMsgServer
         /// <returns>解密后的字节流</returns>
         static byte[] DecryptByAES(byte[] encryptedBytes)
         {
-            if (encryptedBytes.Equals(null) || encryptedBytes.Length < 1)
+            if (Object.Equals(encryptedBytes, null) || encryptedBytes.Length < 1)
             {
                 Logger.HistoryPrinting(Logger.Level.WARN, MethodBase.GetCurrentMethod().DeclaringType.FullName, "Datas for decrypting by AES is abnormal.");
                 return null; // 待解密数据异常
             }
-            if (commonIV.Equals(null) ||
-                commonKey.Equals(null))
+            if (Object.Equals(commonIV, null) ||
+                Object.Equals(commonKey, null))
             {
                 Logger.HistoryPrinting(Logger.Level.WARN, MethodBase.GetCurrentMethod().DeclaringType.FullName, "AES key has not been known yet.");
                 return null; // AES密钥和初始向量未知
